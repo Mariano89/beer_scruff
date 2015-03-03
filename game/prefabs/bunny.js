@@ -3,8 +3,18 @@
 var Bunny = function(game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'bunny', frame);
 
-  // initialize your prefab here
+  // enable physics for the bunny objects
   this.game.physics.arcade.enable(this);
+
+  //bunny properties
+  this.body.gravity.y = 620;
+  this.body.velocity.x = -50;
+  this.body.collideWorldBounds = false;
+  this.outOfBoundsKill = true;
+
+  //bunny animation frames
+  this.animations.add('left', [0, 1], 10, true );
+  this.animations.play('left');
   
 };
 

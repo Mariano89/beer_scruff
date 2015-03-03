@@ -15,7 +15,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":7,"./states/gameover":8,"./states/menu":9,"./states/play":10,"./states/preload":11}],2:[function(require,module,exports){
+},{"./states/boot":8,"./states/gameover":9,"./states/menu":10,"./states/play":11,"./states/preload":12}],2:[function(require,module,exports){
 'use strict';
 
 var Beer = function(game, x, y, frame) {
@@ -40,6 +40,37 @@ module.exports = Beer;
 },{}],3:[function(require,module,exports){
 'use strict';
 
+var Bunny = function(game, x, y, frame) {
+  Phaser.Sprite.call(this, game, x, y, 'bunny', frame);
+
+  // enable physics for the bunny objects
+  this.game.physics.arcade.enable(this);
+
+  //bunny properties
+  this.body.gravity.y = 620;
+  this.body.velocity.x = -50;
+  this.body.collideWorldBounds = false;
+  this.outOfBoundsKill = true;
+
+  //bunny animation frames
+  this.animations.add('left', [0, 1], 10, true );
+  this.animations.play('left');
+  
+};
+
+Bunny.prototype = Object.create(Phaser.Sprite.prototype);
+Bunny.prototype.constructor = Bunny;
+Bunny.prototype.update = function() {
+  
+  // write your prefab's specific update code here
+  
+};
+
+module.exports = Bunny;
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
 var Dude = function(game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'dude', frame);
 
@@ -50,7 +81,7 @@ var Dude = function(game, x, y, frame) {
   this.body.gravity.y = 720;
   this.body.velocity.x = 400;
   this.body.collideWorldBounds = false;
-  this.outofBoundsKill = true;
+  this.outOfBoundsKill = true;
 
   //dude animation frames
   this.animations.add('jump', [1], 10, true );
@@ -72,7 +103,7 @@ Dude.prototype.jump = function(){
 module.exports = Dude;
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var Ground = function(game, x, y, frame) {
@@ -108,7 +139,7 @@ Ground.prototype.reset = function(x, y) {
 
 module.exports = Ground;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var Keg = function(game, x, y, frame) {
@@ -130,7 +161,7 @@ Keg.prototype.update = function() {
 
 module.exports = Keg;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 var PausePanel = function(game, parent) {
@@ -168,7 +199,7 @@ PausePanel.prototype.unpause = function(){
 
 module.exports = PausePanel;
   
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 'use strict';
 
@@ -188,7 +219,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -216,7 +247,7 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -256,10 +287,11 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var Dude = require('../prefabs/dude');
+var Bunny = require('../prefabs/bunny');
 var Ground = require('../prefabs/ground');
 var Beer = require('../prefabs/beer');
 var Keg = require('../prefabs/keg');
@@ -289,6 +321,9 @@ Play.prototype = {
     //player 
     this.player = new Dude(this.game, 500, 0)
     this.game.add.existing(this.player);
+
+    //bunnies
+    this.bunnies = this.game.add.group();
 
     //beer 
     this.beers = this.game.add.group();
@@ -339,6 +374,13 @@ Play.prototype = {
   },
   //collision between elements
   checkCollisions: function(){
+        // loops enemy bunnies
+    // for(var i = 0; i < bunny.length; i++) {
+    //   this.game.physics.arcade.collide(this.player, this.bunny[i]);
+    //   this.game.physics.arcade.collide(this.bunny[i], this.initial_ground);
+    //   this.game.physics.arcade.collide(this.bunny[i], this.groundGroup);
+    // }
+
     //lets player run on the first ground
     this.game.physics.arcade.collide(this.player, this.initial_ground);
     this.game.physics.arcade.collide(this.beers, this.initial_ground);
@@ -346,6 +388,11 @@ Play.prototype = {
     //lets player run on the random generated ground
     this.game.physics.arcade.collide(this.player, this.groundGroup);
     this.game.physics.arcade.collide(this.beers, this.groundGroup);
+
+    //lets bunnies run on ground and collide with player
+    this.game.physics.arcade.collide(this.bunnies, this.groundGroup);
+    this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
+    this.game.physics.arcade.collide(this.bunnies, this.player);
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
@@ -363,12 +410,20 @@ Play.prototype = {
       }
       randGround.reset(1200, randomY);
   },
+
+  //generate bunnies
+  generateBunnies: function(){
+    var bunny = new Bunny(this.game, 1199, 300)
+    this.bunnies.add(bunny);
+  },
+
   //generate beers 
   generateBeers: function(){
     // console.log('beer');
     var beer = new Beer(this.game, 1199, 300)
     this.beers.add(beer);
   },
+
   //generates kegs
   generateKegs: function(){
     // console.log('keg');
@@ -406,6 +461,10 @@ Play.prototype = {
     this.kegGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateKegs, this);
     this.kegGenerator.timer.start();
 
+    //creates bunnies at intervals
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateBunnies, this);
+    this.bunnyGenerator.timer.start();
+
     //runs the game
     this.playGame();
   },
@@ -440,10 +499,19 @@ Play.prototype = {
       this.player.animations.currentAnim.paused = true;
       this.player.body.allowGravity = false;
 
+      this.bunnies.forEach(function(bunny){
+        bunny.body.velocity.x = 0;
+        bunny.animations.currentAnim.paused = true;
+      }, this);
+
+      // this.bunnies.body.velocity.x = 0;
+      // this.bunnies.body.allowGravity = false;
+
       //pause generators
       this.groundGenerator.timer.pause();
       this.beerGenerator.timer.pause();
       this.kegGenerator.timer.pause();
+      this.bunnyGenerator.timer.pause();
 
       //hide pause button
       this.game.add.tween(this.btnPause).to({alpha:0}, 1000, Phaser.Easing.Exponential.Out, true);
@@ -475,10 +543,15 @@ Play.prototype = {
       this.player.animations.currentAnim.resume = true;
       this.player.body.allowGravity = true;
 
+      this.bunny.body.velocity.x = -50;
+      this.bunny.animations.currentAnim.resume = true;
+      this.bunny.body.allowGravity = true;
+
       //resume generators
       this.groundGenerator.timer.resume();
       this.beerGenerator.timer.resume();
       this.kegGenerator.timer.resume();
+      this.bunnyGenerator.timer.resume();
 
       //show pause button
       this.game.add.tween(this.btnPause).to({alpha:1}, 1000, Phaser.Easing.Exponential.In, true);
@@ -498,7 +571,7 @@ Play.prototype = {
 module.exports = Play;
 
 
-},{"../prefabs/beer":2,"../prefabs/dude":3,"../prefabs/ground":4,"../prefabs/keg":5,"../prefabs/pausePanel":6}],11:[function(require,module,exports){
+},{"../prefabs/beer":2,"../prefabs/bunny":3,"../prefabs/dude":4,"../prefabs/ground":5,"../prefabs/keg":6,"../prefabs/pausePanel":7}],12:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -527,7 +600,7 @@ Preload.prototype = {
 
     //spritesheets for the game
     this.load.spritesheet('dude', 'assets/dude.png', 45, 62);
-    this.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
+    this.load.spritesheet('bunny', 'assets/baddie.png', 32, 32);
 
     //sounds for the game
     this.load.audio('dudeJump', 'assets/audio/jump_07.wav');

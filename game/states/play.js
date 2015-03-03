@@ -32,6 +32,9 @@ Play.prototype = {
     this.player = new Dude(this.game, 500, 0)
     this.game.add.existing(this.player);
 
+    //bunnies
+    this.bunnies = this.game.add.group();
+
     //beer 
     this.beers = this.game.add.group();
 
@@ -96,6 +99,11 @@ Play.prototype = {
     this.game.physics.arcade.collide(this.player, this.groundGroup);
     this.game.physics.arcade.collide(this.beers, this.groundGroup);
 
+    //lets bunnies run on ground and collide with player
+    this.game.physics.arcade.collide(this.bunnies, this.groundGroup);
+    this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
+    this.game.physics.arcade.collide(this.bunnies, this.player);
+
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
     this.game.physics.arcade.overlap(this.player, this.kegs, this.collectKegs, null, this);
@@ -112,12 +120,20 @@ Play.prototype = {
       }
       randGround.reset(1200, randomY);
   },
+
+  //generate bunnies
+  generateBunnies: function(){
+    var bunny = new Bunny(this.game, 1199, 300)
+    this.bunnies.add(bunny);
+  },
+
   //generate beers 
   generateBeers: function(){
     // console.log('beer');
     var beer = new Beer(this.game, 1199, 300)
     this.beers.add(beer);
   },
+
   //generates kegs
   generateKegs: function(){
     // console.log('keg');
@@ -155,6 +171,10 @@ Play.prototype = {
     this.kegGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateKegs, this);
     this.kegGenerator.timer.start();
 
+    //creates bunnies at intervals
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateBunnies, this);
+    this.bunnyGenerator.timer.start();
+
     //runs the game
     this.playGame();
   },
@@ -189,10 +209,19 @@ Play.prototype = {
       this.player.animations.currentAnim.paused = true;
       this.player.body.allowGravity = false;
 
+      this.bunnies.forEach(function(bunny){
+        bunny.body.velocity.x = 0;
+        bunny.animations.currentAnim.paused = true;
+      }, this);
+
+      // this.bunnies.body.velocity.x = 0;
+      // this.bunnies.body.allowGravity = false;
+
       //pause generators
       this.groundGenerator.timer.pause();
       this.beerGenerator.timer.pause();
       this.kegGenerator.timer.pause();
+      this.bunnyGenerator.timer.pause();
 
       //hide pause button
       this.game.add.tween(this.btnPause).to({alpha:0}, 1000, Phaser.Easing.Exponential.Out, true);
@@ -224,10 +253,15 @@ Play.prototype = {
       this.player.animations.currentAnim.resume = true;
       this.player.body.allowGravity = true;
 
+      this.bunny.body.velocity.x = -50;
+      this.bunny.animations.currentAnim.resume = true;
+      this.bunny.body.allowGravity = true;
+
       //resume generators
       this.groundGenerator.timer.resume();
       this.beerGenerator.timer.resume();
       this.kegGenerator.timer.resume();
+      this.bunnyGenerator.timer.resume();
 
       //show pause button
       this.game.add.tween(this.btnPause).to({alpha:1}, 1000, Phaser.Easing.Exponential.In, true);
