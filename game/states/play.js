@@ -84,14 +84,8 @@ Play.prototype = {
   },
   //collision between elements
   checkCollisions: function(){
-        // loops enemy bunnies
-    // for(var i = 0; i < bunny.length; i++) {
-    //   this.game.physics.arcade.collide(this.player, this.bunny[i]);
-    //   this.game.physics.arcade.collide(this.bunny[i], this.initial_ground);
-    //   this.game.physics.arcade.collide(this.bunny[i], this.groundGroup);
-    // }
-
-    //lets player run on the first ground
+    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude);
+    //lets player run on the first groundthis.game.physics.arcade.overlap(player, bunny, this.player.body.velocity.y = 500);
     this.game.physics.arcade.collide(this.player, this.initial_ground);
     this.game.physics.arcade.collide(this.beers, this.initial_ground);
 
@@ -154,8 +148,8 @@ Play.prototype = {
     // score += 5;
     // scoreText.text = 'Score: ' + score;
   },
-  killDude: function(player){
-    this.player.lives--;
+  killDude: function(player, bunnies){
+    player.kill();
   },
   //when the game initializes start timers for the generators and play game
   initGame: function(){
@@ -214,8 +208,6 @@ Play.prototype = {
         bunny.animations.currentAnim.paused = true;
       }, this);
 
-      // this.bunnies.body.velocity.x = 0;
-      // this.bunnies.body.allowGravity = false;
 
       //pause generators
       this.groundGenerator.timer.pause();
