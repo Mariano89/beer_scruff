@@ -1,6 +1,7 @@
 'use strict';
 
 var Dude = require('../prefabs/dude');
+var Bunny = require('../prefabs/bunny');
 var Ground = require('../prefabs/ground');
 var Beer = require('../prefabs/beer');
 var Keg = require('../prefabs/keg');
@@ -80,6 +81,13 @@ Play.prototype = {
   },
   //collision between elements
   checkCollisions: function(){
+        // loops enemy bunnies
+    // for(var i = 0; i < bunny.length; i++) {
+    //   this.game.physics.arcade.collide(this.player, this.bunny[i]);
+    //   this.game.physics.arcade.collide(this.bunny[i], this.initial_ground);
+    //   this.game.physics.arcade.collide(this.bunny[i], this.groundGroup);
+    // }
+
     //lets player run on the first ground
     this.game.physics.arcade.collide(this.player, this.initial_ground);
     this.game.physics.arcade.collide(this.beers, this.initial_ground);
