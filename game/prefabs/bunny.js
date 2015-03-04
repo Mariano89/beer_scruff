@@ -22,8 +22,7 @@ Bunny.prototype = Object.create(Phaser.Sprite.prototype);
 Bunny.prototype.constructor = Bunny;
 Bunny.prototype.update = function() {
   
-  // write your prefab's specific update code here
-  
+
 };
 
 module.exports = Bunny;

@@ -84,7 +84,7 @@ Play.prototype = {
   },
   //collision between elements
   checkCollisions: function(){
-    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude);
+
     //lets player run on the first groundthis.game.physics.arcade.overlap(player, bunny, this.player.body.velocity.y = 500);
     this.game.physics.arcade.collide(this.player, this.initial_ground);
     this.game.physics.arcade.collide(this.beers, this.initial_ground);
@@ -96,11 +96,17 @@ Play.prototype = {
     //lets bunnies run on ground and collide with player
     this.game.physics.arcade.collide(this.bunnies, this.groundGroup);
     this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
-    this.game.physics.arcade.collide(this.bunnies, this.player);
+
+    //player dies when bunnies touch him
+    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, null, this);
+    // this.game.physics.arcade.collide(this.bunnies, this.player, this.killDude, null, this);
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
     this.game.physics.arcade.overlap(this.player, this.kegs, this.collectKegs, null, this);
+
+    //bunnies die when player jumps on top
+    // this.bunnies.body.touching.up(this.killBunny);
   },
   //generates grounds with random y-value(height)
   generateGrounds: function() {  
@@ -148,9 +154,24 @@ Play.prototype = {
     // score += 5;
     // scoreText.text = 'Score: ' + score;
   },
+
   killDude: function(player, bunnies){
+    if(player.body.touching.right){
     player.kill();
+    }
+    else {
+      bunnies.kill();
+      //boom
+      this.boom = this.game.add.sprite(0, 0, 'boom');
+      this.bunnies.add(this.boom);
+
+      this.boom.animations.add('boom');
+      this.boom.animations.play('boom', 10, false);
+      this.boom.anchor.setTo(0, 0);
+    }
   },
+
+
   //when the game initializes start timers for the generators and play game
   initGame: function(){
     //creates grounds at intervals
@@ -245,9 +266,12 @@ Play.prototype = {
       this.player.animations.currentAnim.resume = true;
       this.player.body.allowGravity = true;
 
-      this.bunny.body.velocity.x = -50;
-      this.bunny.animations.currentAnim.resume = true;
-      this.bunny.body.allowGravity = true;
+      this.bunnies.forEach(function(bunny){
+        bunny.body.velocity.x = -50;
+        bunny.animations.currentAnim.paused = false;
+        bunny.body.allowGravity = true;
+      }, this);
+      
 
       //resume generators
       this.groundGenerator.timer.resume();
