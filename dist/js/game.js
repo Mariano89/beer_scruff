@@ -54,9 +54,8 @@ var Bunny = function(game, x, y, frame) {
 
   //bunny animation frames
   this.animations.add('left', [0, 1], 10, true );
-  this.animations.play('left');
   this.animations.add('boom', [2, 3, 4, 5, 6, 7, 8, 9], 10, false);
-  
+  this.animations.play('left');
 };
 
 Bunny.prototype = Object.create(Phaser.Sprite.prototype);
@@ -86,6 +85,7 @@ var Dude = function(game, x, y, frame) {
   //dude animation frames
   this.animations.add('jump', [1], 10, true );
   this.animations.add('run', [0, 1, 2, 3], 8, true);
+  this.animations.add('dead', [4, 5, 6, 7], 10, false);
 
   this.lives = 3;
 
@@ -388,15 +388,17 @@ Play.prototype = {
     this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
 
     //player dies when bunnies touch him
-    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, null, this);
+
+    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, null, this); 
+     // var dies = this.player.animations.play('dead');
+     //  dies.play();
+     //  dies.killOnComplete = true;
     // this.game.physics.arcade.collide(this.bunnies, this.player, this.killDude, null, this);
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
     this.game.physics.arcade.overlap(this.player, this.kegs, this.collectKegs, null, this);
 
-    //bunnies die when player jumps on top
-    // this.bunnies.body.touching.up(this.killBunny);
   },
   //generates grounds with random y-value(height)
   generateGrounds: function() {  
@@ -447,22 +449,26 @@ Play.prototype = {
 
   killDude: function(player, bunnies){
     if(player.body.touching.right){
-    player.kill();
-    }
-    else {
       
-      //boom
+        
+        // deadPlayer = new Dude(this.player.body.x, this.player.body.y, 'dude');
+        // deadPlayer.anchor.setTo(0.5, 0.5);
+        var shit = player.animations.play('dead');
+        shit.play();
+        shit.killOnComplete = true;
+        // this.player.animations.play('dead');
+        // player.kill();
+      }
+    else {
       var araboom = bunnies.animations.play('boom');
       araboom.play();
       this.game.sound.play('explode', 1, 0, false, false);
 
-      // araboom.onComplete.add(bunnies.kill(), this);
+      araboom.killOnComplete = true;
 
       // bunnies.kill();
-    
     }
   },
-
 
   //when the game initializes start timers for the generators and play game
   initGame: function(){
@@ -479,7 +485,7 @@ Play.prototype = {
     this.kegGenerator.timer.start();
 
     //creates bunnies at intervals
-    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.3, this.generateBunnies, this);
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateBunnies, this);
     this.bunnyGenerator.timer.start();
 
     //runs the game
@@ -619,7 +625,6 @@ Preload.prototype = {
     //spritesheets for the game
     this.load.spritesheet('dude', 'assets/dude.png', 45, 62);
     this.load.spritesheet('bunny', 'assets/baddie.png', 32, 32);
-    // this.load.spritesheet('boom', 'assets/boom.png', 40, 40, 7);
 
     //sounds for the game
     this.load.audio('dudeJump', 'assets/audio/jump_07.wav');

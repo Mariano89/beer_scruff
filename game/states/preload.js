@@ -27,7 +27,6 @@ Preload.prototype = {
     //spritesheets for the game
     this.load.spritesheet('dude', 'assets/dude.png', 45, 62);
     this.load.spritesheet('bunny', 'assets/baddie.png', 32, 32);
-    // this.load.spritesheet('boom', 'assets/boom.png', 40, 40, 7);
 
     //sounds for the game
     this.load.audio('dudeJump', 'assets/audio/jump_07.wav');
