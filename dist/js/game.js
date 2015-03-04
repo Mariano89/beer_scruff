@@ -371,8 +371,9 @@ Play.prototype = {
       else if(deadchecker == false){
         var deadDude = this.player.animations.play('dead', 3, false, true);
         deadDude.play();
-        this.player.body.touching.down = false;
-        this.player.body.velocity.x = 150;
+        this.player.animations.killOnComplete = true;
+
+        // this.player.body.velocity.x = 150;
       }
       else{
         this.player.animations.play('run');
@@ -456,6 +457,7 @@ Play.prototype = {
   killDude: function(player, bunnies){
     if(player.body.touching.right) {
         deadchecker = false;
+        this.player.alive = false;
         // var deadDude = player.animations.play('dead', 3, false,true);
         // deadDude.play();
         // deadDude.killOnComplete = true;
