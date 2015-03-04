@@ -7,6 +7,7 @@ var Beer = require('../prefabs/beer');
 var Keg = require('../prefabs/keg');
 var PausePanel = require('../prefabs/pausePanel');
 var paused = false;
+var deadchecker = true;
 
 function Play() {}
 Play.prototype = {
@@ -77,10 +78,19 @@ Play.prototype = {
         this.player.animations.play('jump');
         this.player.body.velocity.x = 0; 
       }
+      else if(deadchecker == false){
+        var deadDude = this.player.animations.play('dead', 3, false, true);
+        deadDude.play();
+        this.player.body.touching.down = false;
+        this.player.body.velocity.x = 150;
+      }
       else{
         this.player.animations.play('run');
       };
     };
+  },
+  returnFalse: function() {
+    return deadchecker;
   },
   //collision between elements
   checkCollisions: function(){
@@ -98,11 +108,7 @@ Play.prototype = {
     this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
 
     //player dies when bunnies touch him
-
-    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, null, this); 
-     // var dies = this.player.animations.play('dead');
-     //  dies.play();
-     //  dies.killOnComplete = true;
+    this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, this.returnFalse, this); 
     // this.game.physics.arcade.collide(this.bunnies, this.player, this.killDude, null, this);
 
     //lets player collect beers, kegs
@@ -158,26 +164,26 @@ Play.prototype = {
   },
 
   killDude: function(player, bunnies){
-    if(player.body.touching.right){
-      
-        
-        // deadPlayer = new Dude(this.player.body.x, this.player.body.y, 'dude');
-        // deadPlayer.anchor.setTo(0.5, 0.5);
-        var shit = player.animations.play('dead');
-        shit.play();
-        shit.killOnComplete = true;
-        // this.player.animations.play('dead');
+    if(player.body.touching.right) {
+        deadchecker = false;
+        // var deadDude = player.animations.play('dead', 3, false,true);
+        // deadDude.play();
+        // deadDude.killOnComplete = true;
         // player.kill();
       }
-    else {
-      var araboom = bunnies.animations.play('boom');
-      araboom.play();
-      this.game.sound.play('explode', 1, 0, false, false);
-
-      araboom.killOnComplete = true;
-
-      // bunnies.kill();
+      else {
+        var araboom = bunnies.animations.play('boom');
+        araboom.play();
+        araboom.killOnComplete = true;
+        this.game.sound.play('explode', 1, 0, false, false);
+        this.changeDeadChecker();
+    //   // // bunnies.kill();
     }
+  },
+  changeDeadChecker: function() {
+    setTimeout(function() {
+      deadchecker = true;
+    }, 250);
   },
 
   //when the game initializes start timers for the generators and play game
