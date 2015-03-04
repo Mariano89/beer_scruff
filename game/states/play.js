@@ -160,14 +160,16 @@ Play.prototype = {
     player.kill();
     }
     else {
-      bunnies.kill();
+      
       //boom
-      this.boom = this.game.add.sprite(0, 0, 'boom');
-      this.bunnies.add(this.boom);
+      var araboom = bunnies.animations.play('boom');
+      araboom.play();
+      this.game.sound.play('explode', 1, 0, false, false);
 
-      this.boom.animations.add('boom');
-      this.boom.animations.play('boom', 10, false);
-      this.boom.anchor.setTo(0, 0);
+      // araboom.onComplete.add(bunnies.kill(), this);
+
+      // bunnies.kill();
+    
     }
   },
 
@@ -187,7 +189,7 @@ Play.prototype = {
     this.kegGenerator.timer.start();
 
     //creates bunnies at intervals
-    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateBunnies, this);
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.3, this.generateBunnies, this);
     this.bunnyGenerator.timer.start();
 
     //runs the game

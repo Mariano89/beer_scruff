@@ -15,6 +15,7 @@ var Bunny = function(game, x, y, frame) {
   //bunny animation frames
   this.animations.add('left', [0, 1], 10, true );
   this.animations.play('left');
+  this.animations.add('boom', [2, 3, 4, 5, 6, 7, 8, 9], 10, false);
   
 };
 

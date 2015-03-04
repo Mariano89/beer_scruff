@@ -55,6 +55,7 @@ var Bunny = function(game, x, y, frame) {
   //bunny animation frames
   this.animations.add('left', [0, 1], 10, true );
   this.animations.play('left');
+  this.animations.add('boom', [2, 3, 4, 5, 6, 7, 8, 9], 10, false);
   
 };
 
@@ -449,14 +450,16 @@ Play.prototype = {
     player.kill();
     }
     else {
-      bunnies.kill();
+      
       //boom
-      this.boom = this.game.add.sprite(0, 0, 'boom');
-      this.bunnies.add(this.boom);
+      var araboom = bunnies.animations.play('boom');
+      araboom.play();
+      this.game.sound.play('explode', 1, 0, false, false);
 
-      this.boom.animations.add('boom');
-      this.boom.animations.play('boom', 10, false);
-      this.boom.anchor.setTo(0, 0);
+      // araboom.onComplete.add(bunnies.kill(), this);
+
+      // bunnies.kill();
+    
     }
   },
 
@@ -476,7 +479,7 @@ Play.prototype = {
     this.kegGenerator.timer.start();
 
     //creates bunnies at intervals
-    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateBunnies, this);
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.3, this.generateBunnies, this);
     this.bunnyGenerator.timer.start();
 
     //runs the game
@@ -616,10 +619,11 @@ Preload.prototype = {
     //spritesheets for the game
     this.load.spritesheet('dude', 'assets/dude.png', 45, 62);
     this.load.spritesheet('bunny', 'assets/baddie.png', 32, 32);
-    this.load.spritesheet('boom', 'assets/boom.png', 40, 40, 7);
+    // this.load.spritesheet('boom', 'assets/boom.png', 40, 40, 7);
 
     //sounds for the game
     this.load.audio('dudeJump', 'assets/audio/jump_07.wav');
+    this.load.audio('explode', 'assets/audio/explosion.wav');
   },
   create: function() {
     this.asset.cropEnabled = false;
