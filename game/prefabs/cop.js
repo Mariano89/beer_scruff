@@ -6,7 +6,7 @@ var Cop = function(game, x, y, frame) {
   this.game.physics.arcade.enable(this);
 
   this.body.gravity.y = 620;
-  this.body.velocity.x = -60;
+  this.body.velocity.x = -65;
   this.body.collideWorldBounds = false;
   this.outOfBoundsKill = true;
 

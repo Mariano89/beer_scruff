@@ -76,7 +76,7 @@ var Cop = function(game, x, y, frame) {
   this.game.physics.arcade.enable(this);
 
   this.body.gravity.y = 620;
-  this.body.velocity.x = -60;
+  this.body.velocity.x = -65;
   this.body.collideWorldBounds = false;
   this.outOfBoundsKill = true;
 
@@ -470,7 +470,7 @@ Play.prototype = {
     // this.game.physics.arcade.collide(this.bunnies, this.player, this.killDude, null, this);
 
     //player dies when cops harrass him
-    this.game.physics.arcade.overlap(this.player, this.cops, this.killDude, this.returnFalse, this);
+    this.game.physics.arcade.overlap(this.player, this.cops, this.killCop, this.returnFalse, this);
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
@@ -568,20 +568,20 @@ Play.prototype = {
   },
 
   killCop: function(player, cops) {
-    if(player.body.touching.right) {
+    if(player.body.touching.left) {
       deadchecker = false;
       var deadDude = player.animations.play('dead', 3, false,true);
       deadDude.play();
       deadDude.killOnComplete = true;
       this.changeDeadChecker(this.player, 'dead');
     }
-    else {
-      // var copkilla = cops.animations.play('deadpig');
-      // copkilla.play();
-      // copkilla.killOnComplete = true;
-      this.changeDeadChecker(this.player, 'alive');
-      cops.kill();
-    }
+    // else {
+    //   // var copkilla = cops.animations.play('deadpig');
+    //   // copkilla.play();
+    //   // copkilla.killOnComplete = true;
+    //   this.changeDeadChecker(this.player, 'alive');
+    //   cops.kill();
+    // }
   },
 
   changeDeadChecker: function(player,deadOrAlive) {
@@ -615,11 +615,11 @@ Play.prototype = {
     this.whiskeyGenerator.timer.start();
 
     //creates cops
-    this.copGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateCops, this);
+    this.copGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 3.6, this.generateCops, this);
     this.copGenerator.timer.start();
 
     //creates bunnies at intervals
-    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateBunnies, this);
+    this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateBunnies, this);
     this.bunnyGenerator.timer.start();
 
     //runs the game
@@ -706,7 +706,7 @@ Play.prototype = {
       this.player.body.allowGravity = true;
 
       this.cops.forEach(function(cop){
-        cop.body.velocity.x = -60;
+        cop.body.velocity.x = -65;
         cop.animations.currentAnim.paused = false;
         cop.body.allowGravity = true;
       }, this);
