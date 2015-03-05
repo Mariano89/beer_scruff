@@ -423,7 +423,7 @@ Play.prototype = {
     if(!paused){
       //player speed
       this.player.body.velocity.x = 400;
-      if (this.jumpKey.isDown && this.player.body.touching.down)
+      if (this.jumpKey.isDown && this.player.body.touching.down && this.player.alive)
       {
         this.game.sound.play('dudeJump', 1, 0, false, false);
         this.player.jump();
@@ -434,7 +434,6 @@ Play.prototype = {
       }
       else if(deadchecker == false){
         this.player.body.velocity.x = 150;
-
       }
       else{
         this.player.animations.play('run');
