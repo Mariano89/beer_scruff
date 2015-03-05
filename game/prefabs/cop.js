@@ -10,7 +10,7 @@ var Cop = function(game, x, y, frame) {
   this.body.collideWorldBounds = false;
   this.outOfBoundsKill = true;
 
-  this.animations.add('copleft', [8, 9, 10, 11, 12, 13, 14, 15], 10, true);
+  this.animations.add('copleft', [0, 1, 2, 3, 4], 10, true);
   this.animations.play('copleft');
   
 };

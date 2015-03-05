@@ -1,6 +1,7 @@
 'use strict';
 
 var Dude = require('../prefabs/dude');
+var Cop = require('../prefabs/cop');
 var Bunny = require('../prefabs/bunny');
 var Ground = require('../prefabs/ground');
 var Beer = require('../prefabs/beer');
@@ -33,6 +34,9 @@ Play.prototype = {
     //player 
     this.player = new Dude(this.game, 500, 0)
     this.game.add.existing(this.player);
+
+    //cops
+    this.cops = this.game.add.group();
 
     //bunnies
     this.bunnies = this.game.add.group();
@@ -110,13 +114,18 @@ Play.prototype = {
     this.game.physics.arcade.collide(this.kegs, this.groundGroup);
     this.game.physics.arcade.collide(this.whiskeys, this.groundGroup);
 
-    //lets bunnies run on ground and collide with player
+    //lets bunnies and cops run on ground and collide with player
     this.game.physics.arcade.collide(this.bunnies, this.groundGroup);
     this.game.physics.arcade.collide(this.bunnies, this.initial_ground);
+    this.game.physics.arcade.collide(this.cops, this.groundGroup);
+    this.game.physics.arcade.collide(this.cops, this.initial_ground);
 
     //player dies when bunnies touch him
     this.game.physics.arcade.overlap(this.player, this.bunnies, this.killDude, this.returnFalse, this); 
     // this.game.physics.arcade.collide(this.bunnies, this.player, this.killDude, null, this);
+
+    //player dies when cops harrass him
+    this.game.physics.arcade.overlap(this.player, this.cops, this.killDude, this.returnFalse, this);
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
@@ -137,8 +146,14 @@ Play.prototype = {
       randGround.reset(1200, randomY);
   },
 
+  //generate cops
+  generateCops: function() {
+    var cop = new Cop(this.game, 1199, 300)
+    this.cops.add(cop);
+  },
+
   //generate bunnies
-  generateBunnies: function(){
+  generateBunnies: function() {
     var bunny = new Bunny(this.game, 1199, 300)
     this.bunnies.add(bunny);
   },
@@ -194,7 +209,7 @@ Play.prototype = {
         var deadDude = player.animations.play('dead', 3, false,true);
         deadDude.play();
         deadDude.killOnComplete = true;
-        this.changeDeadChecker(this.player,"dead");
+        this.changeDeadChecker(this.player, 'dead');
 
       }
       else {
@@ -202,9 +217,16 @@ Play.prototype = {
         araboom.play();
         araboom.killOnComplete = true;
         this.game.sound.play('explode', 1, 0, false, false);
-        this.changeDeadChecker(this.player,"alive");
+        this.changeDeadChecker(this.player, 'alive');
     //   // // bunnies.kill();
     }
+      // else {
+      //   // var copkilla = cops.animations.play('copdead');
+      //   // copkilla.play();
+      //   // copkilla.killOnComplete = true;
+      //   this.changeDeadChecker(this.player, 'alive');
+      //   cops.kill();
+      // }
   },
   changeDeadChecker: function(player,deadOrAlive) {
     setTimeout(changeDead, 500);
@@ -235,6 +257,10 @@ Play.prototype = {
     //creates whiskey
     this.whiskeyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 1.6, this.generateWhiskeys, this);
     this.whiskeyGenerator.timer.start();
+
+    //creates cops
+    this.copGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateCops, this);
+    this.copGenerator.timer.start();
 
     //creates bunnies at intervals
     this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateBunnies, this);
@@ -274,6 +300,11 @@ Play.prototype = {
       this.player.animations.currentAnim.paused = true;
       this.player.body.allowGravity = false;
 
+      this.cops.forEach(function(cop){
+        cop.body.velocity.x = 0;
+        cop.animations.currentAnim.paused = true;
+      }, this);
+
       this.bunnies.forEach(function(bunny){
         bunny.body.velocity.x = 0;
         bunny.animations.currentAnim.paused = true;
@@ -285,6 +316,7 @@ Play.prototype = {
       this.beerGenerator.timer.pause();
       this.kegGenerator.timer.pause();
       this.whiskeyGenerator.timer.pause();
+      this.copGenerator.timer.pause();
       this.bunnyGenerator.timer.pause();
 
       //hide pause button
@@ -317,6 +349,12 @@ Play.prototype = {
       this.player.animations.currentAnim.resume = true;
       this.player.body.allowGravity = true;
 
+      this.cops.forEach(function(cop){
+        cop.body.velocity.x = -60;
+        cop.animations.currentAnim.paused = false;
+        cop.body.allowGravity = true;
+      }, this);
+
       this.bunnies.forEach(function(bunny){
         bunny.body.velocity.x = -50;
         bunny.animations.currentAnim.paused = false;
@@ -329,6 +367,7 @@ Play.prototype = {
       this.beerGenerator.timer.resume();
       this.kegGenerator.timer.resume();
       this.whiskeyGenerator.timer.resume();
+      this.copGenerator.timer.resume();
       this.bunnyGenerator.timer.resume();
 
       //show pause button
