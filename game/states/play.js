@@ -5,6 +5,7 @@ var Bunny = require('../prefabs/bunny');
 var Ground = require('../prefabs/ground');
 var Beer = require('../prefabs/beer');
 var Keg = require('../prefabs/keg');
+var Whiskey = require('../prefabs/whiskey');
 var PausePanel = require('../prefabs/pausePanel');
 var paused = false;
 var deadchecker = true;
@@ -41,6 +42,9 @@ Play.prototype = {
 
     //keg
     this.kegs = this.game.add.group();
+
+    //whiskey
+    this.whiskeys = this.game.add.group();
 
 
     //game controls
@@ -81,7 +85,7 @@ Play.prototype = {
       }
       else if(deadchecker == false){
         this.player.body.velocity.x = 150;
-        
+
       }
       else{
         this.player.animations.play('run');
@@ -94,13 +98,17 @@ Play.prototype = {
   //collision between elements
   checkCollisions: function(){
 
-    //lets player run on the first groundthis.game.physics.arcade.overlap(player, bunny, this.player.body.velocity.y = 500);
+    //lets player run on the first ground
     this.game.physics.arcade.collide(this.player, this.initial_ground);
     this.game.physics.arcade.collide(this.beers, this.initial_ground);
+    this.game.physics.arcade.collide(this.kegs, this.initial_ground);
+    this.game.physics.arcade.collide(this.whiskeys, this.initial_ground);
 
     //lets player run on the random generated ground
     this.game.physics.arcade.collide(this.player, this.groundGroup);
     this.game.physics.arcade.collide(this.beers, this.groundGroup);
+    this.game.physics.arcade.collide(this.kegs, this.groundGroup);
+    this.game.physics.arcade.collide(this.whiskeys, this.groundGroup);
 
     //lets bunnies run on ground and collide with player
     this.game.physics.arcade.collide(this.bunnies, this.groundGroup);
@@ -112,7 +120,8 @@ Play.prototype = {
 
     //lets player collect beers, kegs
     this.game.physics.arcade.overlap(this.player, this.beers, this.collectBeer, null, this);
-    this.game.physics.arcade.overlap(this.player, this.kegs, this.collectKegs, null, this);
+    this.game.physics.arcade.overlap(this.player, this.kegs, this.collectKeg, null, this);
+    this.game.physics.arcade.overlap(this.player, this.whiskeys, this.collectWhiskey, null, this);
 
   },
   //generates grounds with random y-value(height)
@@ -145,8 +154,15 @@ Play.prototype = {
   generateKegs: function(){
     // console.log('keg');
     var keg = new Keg(this.game, 1199, 300)
-    this.beers.add(keg);
+    this.kegs.add(keg);
   },
+
+  generateWhiskeys: function(){
+    // console.log('whiskey');
+    var whiskey = new Whiskey(this.game, 1199, 300)
+    this.whiskeys.add(whiskey);
+  },
+
   collectBeer: function(player, beer) {
     // Removes the beer from the screen
     beer.kill();
@@ -154,11 +170,20 @@ Play.prototype = {
     // score += 1;
     // scoreText.text = 'Score: ' + score;
   },
+
   collectKeg: function(player, keg) {
     // Removes the beer from the screen
     keg.kill();
     //  Add and update the score
     // score += 5;
+    // scoreText.text = 'Score: ' + score;
+  },
+
+  collectWhiskey: function(player, whiskey) {
+    // Removes the whiskey from the screen
+    whiskey.kill();
+    // add and update the score
+    // score += 50;
     // scoreText.text = 'Score: ' + score;
   },
 
@@ -206,6 +231,10 @@ Play.prototype = {
     //creates kegs at intervals
     this.kegGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.6, this.generateKegs, this);
     this.kegGenerator.timer.start();
+
+    //creates whiskey
+    this.whiskeyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 1.6, this.generateWhiskeys, this);
+    this.whiskeyGenerator.timer.start();
 
     //creates bunnies at intervals
     this.bunnyGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2.5, this.generateBunnies, this);
@@ -255,6 +284,7 @@ Play.prototype = {
       this.groundGenerator.timer.pause();
       this.beerGenerator.timer.pause();
       this.kegGenerator.timer.pause();
+      this.whiskeyGenerator.timer.pause();
       this.bunnyGenerator.timer.pause();
 
       //hide pause button
@@ -298,6 +328,7 @@ Play.prototype = {
       this.groundGenerator.timer.resume();
       this.beerGenerator.timer.resume();
       this.kegGenerator.timer.resume();
+      this.whiskeyGenerator.timer.resume();
       this.bunnyGenerator.timer.resume();
 
       //show pause button
