@@ -206,28 +206,39 @@ Play.prototype = {
     if(player.body.touching.right) {
         deadchecker = false;
         // this.player.alive = false;
-        var deadDude = player.animations.play('dead', 3, false,true);
+        var deadDude = player.animations.play('dead', 3, false, true);
         deadDude.play();
         deadDude.killOnComplete = true;
         this.changeDeadChecker(this.player, 'dead');
 
       }
       else {
-        var araboom = bunnies.animations.play('boom');
-        araboom.play();
-        araboom.killOnComplete = true;
+        bunnies.animations.play('boom', 3, false, true);
+        // araboom.play();
+        // araboom.killOnComplete = true;
         this.game.sound.play('explode', 1, 0, false, false);
         this.changeDeadChecker(this.player, 'alive');
     //   // // bunnies.kill();
     }
-      // else {
-      //   // var copkilla = cops.animations.play('copdead');
-      //   // copkilla.play();
-      //   // copkilla.killOnComplete = true;
-      //   this.changeDeadChecker(this.player, 'alive');
-      //   cops.kill();
-      // }
   },
+
+  killCop: function(player, cops) {
+    if(player.body.touching.right) {
+      deadchecker = false;
+      var deadDude = player.animations.play('dead', 3, false,true);
+      deadDude.play();
+      deadDude.killOnComplete = true;
+      this.changeDeadChecker(this.player, 'dead');
+    }
+    else {
+      // var copkilla = cops.animations.play('deadpig');
+      // copkilla.play();
+      // copkilla.killOnComplete = true;
+      this.changeDeadChecker(this.player, 'alive');
+      cops.kill();
+    }
+  },
+
   changeDeadChecker: function(player,deadOrAlive) {
     setTimeout(changeDead, 500);
 
