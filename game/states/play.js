@@ -42,9 +42,11 @@ Play.prototype = {
     //keg
     this.kegs = this.game.add.group();
 
+
     //game controls
     this.jumpKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     // this.pauseKey = this.game.input.keyboard.addKey(32);
+
 
     // makes spacebar not scroll down 
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
@@ -62,13 +64,12 @@ Play.prototype = {
   },
   update: function() {
     //callls the checkcollisions function 
-    this.checkCollisions();
+    this.checkCollisions(); 
 
     //if game is not paused enable player animation and update movement
     if(!paused){
       //player speed
       this.player.body.velocity.x = 400;
-
       if (this.jumpKey.isDown && this.player.body.touching.down)
       {
         this.game.sound.play('dudeJump', 1, 0, false, false);
@@ -79,11 +80,8 @@ Play.prototype = {
         this.player.body.velocity.x = 0; 
       }
       else if(deadchecker == false){
-        var deadDude = this.player.animations.play('dead', 3, false, true);
-        deadDude.play();
-        this.player.animations.killOnComplete = true;
-
-        // this.player.body.velocity.x = 150;
+        this.player.body.velocity.x = 150;
+        
       }
       else{
         this.player.animations.play('run');
@@ -167,25 +165,32 @@ Play.prototype = {
   killDude: function(player, bunnies){
     if(player.body.touching.right) {
         deadchecker = false;
-        this.player.alive = false;
-        // var deadDude = player.animations.play('dead', 3, false,true);
-        // deadDude.play();
-        // deadDude.killOnComplete = true;
-        // player.kill();
+        // this.player.alive = false;
+        var deadDude = player.animations.play('dead', 3, false,true);
+        deadDude.play();
+        deadDude.killOnComplete = true;
+        this.changeDeadChecker(this.player,"dead");
+
       }
       else {
         var araboom = bunnies.animations.play('boom');
         araboom.play();
         araboom.killOnComplete = true;
         this.game.sound.play('explode', 1, 0, false, false);
-        this.changeDeadChecker();
+        this.changeDeadChecker(this.player,"alive");
     //   // // bunnies.kill();
     }
   },
-  changeDeadChecker: function() {
-    setTimeout(function() {
+  changeDeadChecker: function(player,deadOrAlive) {
+    setTimeout(changeDead, 500);
+
+    function changeDead() {
       deadchecker = true;
-    }, 250);
+      if(deadOrAlive == "dead"){
+        player.kill();
+      }
+    }
+
   },
 
   //when the game initializes start timers for the generators and play game
