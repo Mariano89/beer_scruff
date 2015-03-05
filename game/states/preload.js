@@ -19,6 +19,7 @@ Preload.prototype = {
     this.load.image('ground', 'assets/platform.png');
     this.load.image('beer', 'assets/beer.png');
     this.load.image('keg', 'assets/keg.png');
+    this.load.image('whiskey', 'assets/WHISKEY_BOTTLE.svg');
     this.load.image('heart', 'assets/heart.png');
     this.load.image('pause-btn', 'assets/pause-btn.png');
     this.load.image('pausePanel', 'assets/pausePanel.png');
