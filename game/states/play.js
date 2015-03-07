@@ -222,7 +222,7 @@ Play.prototype = {
   },
 
   killCop: function(player, cops) {
-    if(player.body.touching.left) {
+    if(player.body.touching.right) {
       deadchecker = false;
       var deadDude = player.animations.play('dead', 3, false,true);
       deadDude.play();
@@ -247,7 +247,6 @@ Play.prototype = {
         player.kill();
       }
     }
-
   },
 
   //when the game initializes start timers for the generators and play game
